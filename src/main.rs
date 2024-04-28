@@ -12,8 +12,8 @@ struct EnvironmentVariable {
     variable_type: String,
     // #[serde(rename = "gitBranch", skip_serializing_if = "Option::is_none")]
     // github_branch: Some<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    comment: Some<String>,
+    // #[serde(skip_serializing_if = "Option::is_none")]
+    comment: String,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -78,6 +78,12 @@ impl fmt::Display for VariableType {
     }
 }
 
+struct VercelConfiguration {
+    token: String,
+    team_id: String,
+    project_id: String,
+}
+
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     // fetch vercel requirements
@@ -96,11 +102,21 @@ async fn main() -> Result<(), Error> {
 
     let http_client = Client::new();
 
+    let environment = match target_environment {
+        Ok(value) => value.to_string(),
+        Err(e) => e,
+    };
+
+    let ttype = match variable_type {
+        Ok(value) => value.to_string(),
+        Err(e) => e,
+    };
+
     let environment_variable = EnvironmentVariable {
         key: key.to_string(),
         value: value.to_string(),
-        target_environment: vec![target_environment.to_string()],
-        variable_type: variable_type.to_string(),
+        target_environment: vec![environment],
+        variable_type: ttype,
         // github_branch_name: github_branch.to_string(),
         comment: comment.to_string(),
     };
