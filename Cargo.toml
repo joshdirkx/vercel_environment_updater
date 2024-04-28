@@ -1,0 +1,21 @@
+[package]
+name = "vercel_environment_updater"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies.reqwest]
+version = "0.12.4"
+features = ["json"]
+
+[dependencies.tokio]
+version = "1.37.0"
+features = ["full"]
+
+[dependencies.serde]
+version = "1.0.199"
+features = ["derive"]
+
+[dependencies.serde_json]
+version = "1.0.116"
