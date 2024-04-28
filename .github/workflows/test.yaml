@@ -12,7 +12,7 @@ jobs:
 
       - name: update variable
         uses: ./
-        with:
+        env:
           vercel_token: ${{ secrets.VERCEL_TOKEN }}
           vercel_team_id: ${{ secrets.VERCEL_TEAM_ID }}
           vercel_project_id: ${{ secrets.VERCEL_PROJECT_ID }}
