@@ -13,6 +13,6 @@ RUN apt-get update && \
 
 COPY --from=builder /usr/local/cargo/bin/vercel_environment_updater /usr/local/bin/vercel_environment_updater
 
-RUN chmod +x ./vercel_environment_updater
+RUN chmod +x /usr/local/bin/vercel_environment_updater
 
-CMD ["./vercel_environment_updater"]
+CMD ["/usr/local/bin/vercel_environment_updater"]
