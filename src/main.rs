@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate derive_builder;
+
 use std::{env, fmt};
 use reqwest::{Client, Error};
 use serde::{Deserialize, Serialize};
@@ -78,18 +81,25 @@ impl fmt::Display for VariableType {
     }
 }
 
+#[derive(Builder, Debug, Clone)]
 struct VercelConfiguration {
     token: String,
     team_id: String,
     project_id: String,
 }
 
+fn build_vercel_configuration() -> VercelConfiguration {
+    VercelConfigurationBuilder::default()
+        .token(fetch_environment_variable("VERCEL_TOKEN"))
+        .team_id(fetch_environment_variable("VERCEL_TEAM_ID"))
+        .project_id(fetch_environment_variable("VERCEL_PROJECT_ID"))
+        .build()
+        .unwrap()
+}
+
 #[tokio::main]
 async fn main() -> Result<(), Error> {
-    // fetch vercel requirements
-    let vercel_token = fetch_environment_variable("VERCEL_TOKEN");
-    let vercel_team_id = fetch_environment_variable("VERCEL_TEAM_ID");
-    let vercel_project_id = fetch_environment_variable("VERCEL_PROJECT_ID");
+    let vercel_configuration = build_vercel_configuration();
 
     // fetch environment variable requirements
     let key = fetch_environment_variable("KEY");
@@ -122,8 +132,8 @@ async fn main() -> Result<(), Error> {
     };
 
     let res = http_client
-        .post(vercel_api_path(vercel_team_id, vercel_project_id))
-        .bearer_auth(vercel_token)
+        .post(vercel_api_path(vercel_configuration.team_id, vercel_configuration.project_id))
+        .bearer_auth(vercel_configuration.token)
         .json(&environment_variable)
         .send()
         .await?;
