@@ -8,6 +8,8 @@ jobs:
     name: updates environment variable
 
     steps:
+      - uses: actions/checkout@v4
+
       - name: update variable
         uses: ./
         with:
