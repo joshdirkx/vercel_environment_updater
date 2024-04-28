@@ -1,0 +1,16 @@
+on:
+  - push
+
+jobs:
+  update_vercel_environment_variable:
+    runs-on: ubuntu-latest
+
+    name: updates environment variable
+
+    steps:
+      - name: update variable
+        uses: ./
+        with:
+          vercel_token: ${{ secrets.VERCEL_TOKEN }}
+          vercel_team_id: ${{ secrets.VERCEL_TEAM_ID }}
+          vercel_project_id: ${{ secrets.VERCEL_PROJECT_ID }}
