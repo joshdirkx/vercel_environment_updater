@@ -49,6 +49,7 @@ async fn main() -> Result<(), Error> {
     let environment_variable_value = "TEST"; //fetch_environment_variable("ENVIRONMENT_VARIABLE_VALUE");
     let environment_variable_target_environment = "production"; //fetch_environment_variable("ENVIRONMENT_VARIABLE_TARGET_ENVIRONMENT");
     let environment_variable_variable_type = "plain"; //fetch_environment_variable("ENVIRONMENT_VARIABLE_VARIABLE_TYPE");
+    // GitHub branch name is only supported for non-production environments it seems
     // let environment_variable_github_branch_name = "main"; //fetch_environment_variable("ENVIRONMENT_VARIABLE_GITHUB_BRANCH_NAME");
     let environment_variable_comment = "comment"; //fetch_environment_variable("ENVIRONMENT_VARIABLE_COMMENT");
 
