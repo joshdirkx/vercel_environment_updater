@@ -45,13 +45,13 @@ async fn main() -> Result<(), Error> {
     let vercel_project_id = fetch_environment_variable("VERCEL_PROJECT_ID");
 
     // fetch environment variable requirements
-    let environment_variable_name = "TEST"; //fetch_environment_variable("ENVIRONMENT_VARIABLE_NAME");
-    let environment_variable_value = "TEST"; //fetch_environment_variable("ENVIRONMENT_VARIABLE_VALUE");
-    let environment_variable_target_environment = "production"; //fetch_environment_variable("ENVIRONMENT_VARIABLE_TARGET_ENVIRONMENT");
-    let environment_variable_variable_type = "plain"; //fetch_environment_variable("ENVIRONMENT_VARIABLE_VARIABLE_TYPE");
+    let key = fetch_environment_variable("KEY");
+    let value = fetch_environment_variable("VALUE");
+    let target_environment = fetch_environment_variable("TARGET_ENVIRONMENT");
+    let variable_type = fetch_environment_variable("VARIABLE_TYPE");
     // GitHub branch name is only supported for non-production environments it seems
     // let environment_variable_github_branch_name = "main"; //fetch_environment_variable("ENVIRONMENT_VARIABLE_GITHUB_BRANCH_NAME");
-    let environment_variable_comment = "comment"; //fetch_environment_variable("ENVIRONMENT_VARIABLE_COMMENT");
+    let comment = fetch_environment_variable("COMMENT");
 
     // let variable_type = VariableType::from_string(environment_variable_variable_type.to_string())
     //     .expect("Invalid variable_type");
@@ -59,12 +59,12 @@ async fn main() -> Result<(), Error> {
     let http_client = Client::new();
 
     let environment_variable = EnvironmentVariable {
-        key: environment_variable_name.to_string(),
-        value: environment_variable_value.to_string(),
-        target_environment: vec![environment_variable_target_environment.to_string()],
-        variable_type: environment_variable_variable_type.to_string(),
+        key: key.to_string(),
+        value: value.to_string(),
+        target_environment: vec![target_environment.to_string()],
+        variable_type: variable_type.to_string(),
         // github_branch_name: environment_variable_github_branch_name.to_string(),
-        comment: environment_variable_comment.to_string(),
+        comment: comment.to_string(),
     };
 
     let res = http_client

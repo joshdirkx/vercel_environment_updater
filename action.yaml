@@ -2,25 +2,7 @@ name: 'Vercel Environment Variable Updater'
 
 description: 'Updates environment variables in Vercel via the API'
 
-#inputs:
-#  vercel_token:
-#    description: 'Vercel API Token'
-#    required: true
-#
-#  vercel_team_id:
-#    description: 'Vercel Team ID'
-#    required: true
-#
-#  vercel_project_id:
-#    description: 'Vercel Project ID'
-#    required: true
-
 runs:
   using: docker
 
   image: 'Dockerfile'
-
-#  args:
-#    - ${{ inputs.vercel_token }}
-#    - ${{ inputs.vercel_team_id }}
-#    - ${{ inputs.vercel_project_id }}
