@@ -1,4 +1,4 @@
-use std::env;
+use std::{env, fmt};
 use reqwest::{Client, Error};
 use serde::{Deserialize, Serialize};
 
@@ -10,32 +10,73 @@ struct EnvironmentVariable {
     target_environment: Vec<String>,
     #[serde(rename = "type")]
     variable_type: String,
-    // #[serde(rename = "gitBranch")]
-    // github_branch_name: String,
-    comment: String,
+    // #[serde(rename = "gitBranch", skip_serializing_if = "Option::is_none")]
+    // github_branch: Some<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    comment: Some<String>,
 }
 
-// #[derive(Serialize, Deserialize)]
-// enum VariableType {
-//     System,
-//     Secret,
-//     Encrypted,
-//     Plain,
-//     Sensitive
-// }
-//
-// impl VariableType {
-//     fn from_string(variable_type_name: String) -> Result<Self, String> {
-//         match variable_type_name.to_lowercase().as_str() {
-//             "system" => Ok(VariableType::System),
-//             "secret" => Ok(VariableType::Secret),
-//             "encrypted" => Ok(VariableType::Encrypted),
-//             "plain" => Ok(VariableType::Plain),
-//             "sensitive" => Ok(VariableType::Sensitive),
-//             _ => Err(format!("Invalid type for VariableType: {}", variable_type_name)),
-//         }
-//     }
-// }
+#[derive(Serialize, Deserialize)]
+enum TargetEnvironment {
+    Production,
+    Preview,
+    Development,
+}
+
+impl TargetEnvironment {
+    fn from_string(name: String) -> Result<Self, String> {
+        match name.to_lowercase().as_str() {
+            "production" => Ok(TargetEnvironment::Production),
+            "preview" => Ok(TargetEnvironment::Preview),
+            "development" => Ok(TargetEnvironment::Development),
+            _ => Err(format!("Invalid name for TargetEnvironment: {}", name)),
+        }
+    }
+}
+
+impl fmt::Display for TargetEnvironment {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", match self {
+            TargetEnvironment::Production => "production",
+            TargetEnvironment::Preview => "preview",
+            TargetEnvironment::Development => "development",
+        })
+    }
+}
+
+#[derive(Serialize, Deserialize)]
+enum VariableType {
+    System,
+    Secret,
+    Encrypted,
+    Plain,
+    Sensitive
+}
+
+impl VariableType {
+    fn from_string(variable_type_name: String) -> Result<Self, String> {
+        match variable_type_name.to_lowercase().as_str() {
+            "system" => Ok(VariableType::System),
+            "secret" => Ok(VariableType::Secret),
+            "encrypted" => Ok(VariableType::Encrypted),
+            "plain" => Ok(VariableType::Plain),
+            "sensitive" => Ok(VariableType::Sensitive),
+            _ => Err(format!("Invalid type for VariableType: {}", variable_type_name)),
+        }
+    }
+}
+
+impl fmt::Display for VariableType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", match self {
+            VariableType::System => "system",
+            VariableType::Secret => "secret",
+            VariableType::Encrypted => "encrypted",
+            VariableType::Plain => "plain",
+            VariableType::Sensitive => "sensitive",
+        })
+    }
+}
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
@@ -47,14 +88,11 @@ async fn main() -> Result<(), Error> {
     // fetch environment variable requirements
     let key = fetch_environment_variable("KEY");
     let value = fetch_environment_variable("VALUE");
-    let target_environment = fetch_environment_variable("TARGET_ENVIRONMENT");
-    let variable_type = fetch_environment_variable("VARIABLE_TYPE");
+    let target_environment = TargetEnvironment::from_string(fetch_environment_variable("TARGET_ENVIRONMENT"));
+    let variable_type = VariableType::from_string(fetch_environment_variable("VARIABLE_TYPE"));
     // GitHub branch name is only supported for non-production environments it seems
-    // let environment_variable_github_branch_name = "main"; //fetch_environment_variable("ENVIRONMENT_VARIABLE_GITHUB_BRANCH_NAME");
+    // let github_branch = fetch_environment_variable("GITHUB_BRANCH");
     let comment = fetch_environment_variable("COMMENT");
-
-    // let variable_type = VariableType::from_string(environment_variable_variable_type.to_string())
-    //     .expect("Invalid variable_type");
 
     let http_client = Client::new();
 
@@ -63,7 +101,7 @@ async fn main() -> Result<(), Error> {
         value: value.to_string(),
         target_environment: vec![target_environment.to_string()],
         variable_type: variable_type.to_string(),
-        // github_branch_name: environment_variable_github_branch_name.to_string(),
+        // github_branch_name: github_branch.to_string(),
         comment: comment.to_string(),
     };
 
