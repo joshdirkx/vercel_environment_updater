@@ -1,0 +1,57 @@
+on:
+  - push
+
+env:
+  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+  DOCKER_ORGANIZATION: ${{ secrets.DOCKER_ORGANIZATION }}
+  DOCKER_IMAGE_NAME: ${{ secrets.DOCKER_IMAGE_NAME }}
+  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+  VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  build_image:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: build image
+        run: docker build -t ${DOCKER_ORGANIZATION}/${DOCKER_IMAGE_NAME}:latest .
+
+      - uses: docker/login-action@v1
+        with:
+          username: ${DOCKER_USERNAME}
+          password: ${DOCKER_PASSWORD}
+
+      - name: push image
+        run: docker push ${DOCKER_ORGANIZATION}/${DOCKER_IMAGE_NAME}:latest
+
+  update_variable:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: pull image
+        run: docker pull ${DOCKER_ORGANIZATION}/${DOCKER_IMAGE_NAME}:latest
+
+      - name: run container
+        run: |
+          docker run \
+          -e KEY=key \
+          -e VALUE=value \
+          -e TARGET_ENVIRONMENT=production \
+          -e VARIABLE_TYPE=plain \
+          -e COMMENT=gha \
+          ${DOCKER_ORGANIZATION}/${DOCKER_IMAGE_NAME}
+
+      - name: update variable
+        uses: ./
+        env:
+          KEY: 'key'
+          VALUE: 'test'
+          TARGET_ENVIRONMENT: 'production'
+          VARIABLE_TYPE: 'plain'
+          COMMENT: 'testing GHA'
