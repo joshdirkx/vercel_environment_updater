@@ -1,14 +1,6 @@
 on:
   - push
 
-env:
-  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-  DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
-  DOCKER_REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
-  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-  VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-
 jobs:
   build_image:
     runs-on: ubuntu-latest
@@ -24,7 +16,7 @@ jobs:
       - uses: docker/build-push-action@v5
         with:
           push: true
-          tags: ${DOCKER_USERNAME}/${DOCKER_REPOSITORY}:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest
 
   update_variable:
     runs-on: ubuntu-latest
@@ -38,7 +30,7 @@ jobs:
 #          password: ${DOCKER_TOKEN}
 
       - name: pull image
-        run: docker pull ${DOCKER_USERNAME}/${DOCKER_REPOSITORY}:latest
+        run: docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest
 
       - name: run container
         run: |
@@ -48,4 +40,7 @@ jobs:
           -e TARGET_ENVIRONMENT=production \
           -e VARIABLE_TYPE=plain \
           -e COMMENT=gha \
+          -e VERCEL_TOKEN=${{ secrets.VERCEL_TOKEN }} \
+          -e VERCEL_TEAM_ID=${{ secrets.VERCEL_TEAM_ID }} \ 
+          -e VERCEL_PROJECT_ID=${{ secrets.VERCEL_PROJECT_ID }} \
           ${DOCKER_USERNAME}/${DOCKER_REPOSITORY}
