@@ -45,4 +45,4 @@ jobs:
           -e VERCEL_TOKEN=${{ secrets.VERCEL_TOKEN }} \
           -e VERCEL_TEAM_ID=${{ secrets.VERCEL_TEAM_ID }} \ 
           -e VERCEL_PROJECT_ID=${{ secrets.VERCEL_PROJECT_ID }} \
-          ${DOCKER_USERNAME}/${DOCKER_REPOSITORY}
+          ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}
