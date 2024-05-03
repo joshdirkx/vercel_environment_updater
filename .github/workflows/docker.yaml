@@ -21,6 +21,8 @@ jobs:
   update_variable:
     runs-on: ubuntu-latest
 
+    needs: build_image
+
     steps:
       - uses: actions/checkout@v4
 
