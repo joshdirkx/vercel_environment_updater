@@ -16,14 +16,14 @@ RUN cargo chef cook --release --recipe-path recipe.json
 
 COPY . .
 
-RUN cargo build --release --bin app
+RUN cargo build --release
 
 FROM debian:bookworm-slim AS runtime
 
 WORKDIR /app
 
-COPY --from=builder /app/target/release/app /usr/local/bin
+COPY --from=builder /app/target/release/vercel_environment_updater /usr/local/bin
 
-RUN chmod +x /usr/local/bin/app
+RUN chmod +x /usr/local/bin/vercel_environment_updater
 
-ENTRYPOINT ["/usr/local/bin/app"]
+ENTRYPOINT ["/usr/local/bin/vercel_environment_updater"]
