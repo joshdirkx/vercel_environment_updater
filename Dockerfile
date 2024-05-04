@@ -1,19 +1,29 @@
-FROM rust:1.77-bullseye as builder
+FROM lukemathwalker/cargo-chef:latest-rust-1 AS chef
 
-WORKDIR /usr/src/vercel_environment_updater
+WORKDIR /app
+
+FROM chef AS planner
 
 COPY . .
 
-RUN cargo install --path .
+RUN cargo chef prepare --recipe-path recipe.json
 
-FROM debian:bullseye-slim
+FROM chef AS builder
 
-RUN apt-get update && \
-    apt-get install -y ca-certificates && \
-    rm -rf /var/lib/apt/lists/*
+COPY --from=planner /app/recipe.json recipe.json
 
-COPY --from=builder /usr/local/cargo/bin/vercel_environment_updater /usr/local/bin/vercel_environment_updater
+RUN cargo chef cook --release --recipe-path recipe.json
 
-RUN chmod +x /usr/local/bin/vercel_environment_updater
+COPY . .
 
-ENTRYPOINT ["/usr/local/bin/vercel_environment_updater"]
+RUN cargo build --release --bin app
+
+FROM debian:bookworm-slim AS runtime
+
+WORKDIR /app
+
+COPY --from=builder /app/target/release/app /usr/local/bin
+
+RUN chmod +x /usr/local/bin/app
+
+ENTRYPOINT ["/usr/local/bin/app"]
