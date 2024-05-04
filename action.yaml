@@ -1,8 +1,0 @@
-name: 'Vercel Environment Variable Updater'
-
-description: 'Updates environment variables in Vercel via the API'
-
-runs:
-  using: docker
-
-  image: 'Dockerfile'
