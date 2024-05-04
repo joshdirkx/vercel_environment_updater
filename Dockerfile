@@ -22,6 +22,10 @@ FROM debian:bookworm-slim AS runtime
 
 WORKDIR /app
 
+RUN apt-get update && \
+    apt-get install -y ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
 COPY --from=builder /app/target/release/vercel_environment_updater /usr/local/bin
 
 RUN chmod +x /usr/local/bin/vercel_environment_updater
